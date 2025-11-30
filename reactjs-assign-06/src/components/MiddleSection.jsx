@@ -84,6 +84,7 @@ function MiddleSection() {
 
     // Loading Handling
     if (isLoading) return (
+
         <div className="flex justify-center">
             <RotatingLines
                 visible={true}
@@ -97,6 +98,7 @@ function MiddleSection() {
                 wrapperClass=""
             />
         </div>
+
     )
 
     return (
@@ -174,7 +176,7 @@ function MiddleSection() {
                             placeholder="Enter views"
                             value={views}
                             onChange={(e) => setViews(e.target.value)}
-                            className="text-[15px] font-medium w-24 border border-gray-300 rounded-lg px-4 py-2.5 ring-1 ring-gray-300 ring-offset-gray-50 focus:ring-2 focus:ring-blue-500 focus:ring-offset-1.5 transition-all duration-500"
+                            className="text-[15px] font-medium w-30 border border-gray-300 rounded-lg px-4 py-2.5 ring-1 ring-gray-300 ring-offset-gray-50 focus:ring-2 focus:ring-blue-500 focus:ring-offset-1.5 transition-all duration-500"
                         />
                         <button onClick={handleAddOrUpdate} className="bg-blue-600 text-white px-5 py-2.5 rounded-lg hover:bg-blue-700 transition-all ease-in-out duration-500 hover:cursor-pointer hover:scale-95">
                             {editId ? "Update" : "Add"}
