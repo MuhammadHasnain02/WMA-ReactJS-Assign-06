@@ -1,12 +1,15 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useFetch } from "../Hook/useFetch";
+import { RotatingLines } from "react-loader-spinner";
 
 function MiddleSection() {
 
-    const [refreshKey, setRefreshKey] = useState(0);
-    const refresh = () => setRefreshKey(prev => prev + 1);
+    const { data: fetchedPosts, isLoading } = useFetch("http://localhost:3000/posts");
+    const [posts, setPosts] = useState([]);
 
-    const { data: posts, isLoading } = useFetch("http://localhost:3000/posts" , refreshKey);
+    useEffect(() => {
+        setPosts(fetchedPosts);
+    }, [fetchedPosts]);
 
     const [title, setTitle] = useState("");
     const [views, setViews] = useState("");
@@ -35,11 +38,13 @@ function MiddleSection() {
                 })
 
             });
+
+            setPosts( prev => prev.map( p => p.id === editId ? { ...p , title , views: Number(views) } : p ) )
             setEditId(null)
-            
+
         }
         else {
-            await fetch("http://localhost:3000/posts", {
+            const response = await fetch("http://localhost:3000/posts", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -49,11 +54,14 @@ function MiddleSection() {
                     views: Number(views)
                 })
             });
+
+            const newPost = await response.json();
+            setPosts( prev => [...prev , newPost] )
+
         }
 
         setTitle("");
         setViews("");
-        refresh();
 
     };
 
@@ -61,7 +69,7 @@ function MiddleSection() {
     const delPost = async (id) => {
 
         await fetch(`http://localhost:3000/posts/${id}` , { method: "DELETE"});
-        refresh();
+        setPosts( prev => prev.filter( post => post.id !== id ) )
 
     }
 
@@ -71,18 +79,31 @@ function MiddleSection() {
         setTitle(post.title)
         setViews(post.views)
         setEditId(post.id)
-        refresh();
 
     }
 
     // Loading Handling
-    if (isLoading) return <h1 className="text-gray-800 text-center mt-10">Loading...</h1>;
+    if (isLoading) return (
+        <div className="flex justify-center">
+            <RotatingLines
+                visible={true}
+                height="70"
+                width="70"
+                color="white"
+                strokeWidth="5"
+                animationDuration="1"
+                ariaLabel="rotating-lines-loading"
+                wrapperStyle={{}}
+                wrapperClass=""
+            />
+        </div>
+    )
 
     return (
 
         <section className="flex flex-col items-center flex-grow justify-center">
 
-            <div className="w-[90%] max-w-lg space-y-6 bg-white shadow-lg transition-all duration-300 rounded-2xl p-8 border border-gray-200">
+            <div className="w-[90%] max-w-lg space-y-6 bg-gray-200 shadow-lg transition-all duration-300 rounded-2xl p-8 border border-gray-200">
 
                 {/* Title */}
                 <h2 className="text-[24px] font-bold text-center text-gray-800 tracking-wide">
